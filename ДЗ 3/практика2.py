@@ -27,6 +27,18 @@ class Player:
     def is_alive(self):
         return self.health > 0
 
+    def permutation_sword(self):
+        print('Какие два меча хотите поменять местами?')
+        print('Ваш ответ (например 1,2): ', end='')
+        otvet = [int(q - 1) for 1 in input().split(',')]
+        self.sword[otvet[0]], self.sword[otvet[1]] = self.sword[otvet[1]], self.sword[otvet[0]]
+        print()
+
+    def vibros(self):
+        pass           #реализовать метод выбороса меча из инвентаря и потом связть это с блоком из основной программы комната сундук
+
+
+
 def generate_room(lab):
     for i in range(len(lab)):
         for j in range(len(lab[i])):
@@ -50,35 +62,62 @@ def otrisovka(x, y):
 
 def move_player(x, y):
     print('Выберите куда сходить (w, s, a, d): ', end='')
-    command = input()
-    if command == 'w':
+    command = input().lower() #будем смотреть ввод от пользователя в нижнем регистре 
+    if command == 'w' or command == 'ц':
         if x > 0:
             x -= 1
         else:
             print('Вы не можете идти дальше вверх.')
-            time.sleep(3)
-    elif command == 's':
+            time.sleep(2)
+    elif command == 's' or command == 'ы':
         if x < n - 1:
             x += 1
         else:
             print('Вы не можете идти дальше вниз.')
-            time.sleep(3)
-    elif command == 'a':
+            time.sleep(2)
+    elif command == 'a' or command == 'ф':
         if y > 0:
             y -= 1
         else:
             print('Вы не можете идти дальше влево.')
-            time.sleep(3)
-    elif command == 'd':
+            time.sleep(2)
+    elif command == 'd' or command == 'в':
         if y < n - 1:
             y += 1
         else:
             print('Вы не можете идти дальше вправо.')
-            time.sleep(3)
+            time.sleep(2)
     else:
         print('Неверная команда. Попробуйте снова.')
-        time.sleep(3)
+        time.sleep(2)
     return x, y
+
+def invent():
+    print('Хотите заглянуть в инвентарь? (да/нет)')
+    print('Ваш ответ: ', end='')
+    otvet = input()
+    if otvet == 'да':
+        print('Инвентарь:')
+        print(f'Здоровье: {player.health}')
+        print(f'Броня: {player.armor}')
+        print('Мечи: ', end='')
+        print(player.swords if player.swords else 'пусто')
+        time.sleep(1)
+        print()
+        if len(player.swords) > 0:
+            print('Хотите поменять местами мечи? (да/нет)')
+            print('Самый первый меч в списке будет являться основным.')
+            print('Ваш ответ: ', end='')
+            otvet = input()
+            if otvet == 'да':
+                player.permutation_sword()
+                time.sleep(2)
+            else:
+                time.sleep(2)
+    else:
+        return True  # эта строка нужна для проверки, если пользователь решил не идти дальше и не захотел смотреть в инвентарь
+        print()
+
 
 
 # def information(invent):
@@ -158,7 +197,7 @@ while True:
             otvet = input()
             if otvet == 'да':
                 player.health += lab1[x][y].health
-                player.armor = min(80, player.armor + lab1[x][y].armor)
+                player.armor = min(80, player.armor + lab1[x][y].armor) # сделаем ограничение на броню
                 if ogr_sword - len(player.swords) >= len(lab1[x][y].sword):
                     player.swords.extend(lab1[x][y].sword)
                     print('Вы забрали предметы из сундука.')
@@ -168,13 +207,14 @@ while True:
                     print(f'Вы можете забрать только {ogr_sword - len(player.swords)} меча.')
                     print('Хотите забрать только часть мечей из сундука? (да/нет)')
                     print('Ваш ответ: ', end='')
-                    otvet = input()
-                    print()
-                    if otvet == 'да':
-                        print(f'Выберите меч(и), котоые хотите забрать: ')
+                    otvet = input()                                                              # !!!!!!!!!!!!!!!!!!!!!!!!
+                    print()                                                                # тут остановился, доработать механику выбрасывания меча     
+                    if otvet == 'да':                                                      # и добавления нового
+                        print(f'Напишите номера меча или мечей, которые хотите забрать: ')
                         for i in range(len(lab1[x][y].sword)):
-                            print(f'{i}. Меч с уроном {lab1[x][y].sword[i]}')
-                        result = [int(q) for q in input().split()]
+                            print(f'{i + 1}. Меч с уроном {lab1[x][y].sword[i]}')
+                        print('Ваш выбор (пишите через запятую с пробелом): ', end='')
+                        result = [int(q - 1) for q in input().split(', ')]
 
                         for i in result:
                             player.swords.append(lab1[x][y].sword[i])
@@ -187,28 +227,27 @@ while True:
             print('Вы вошли в комнату с монстром.')
             time.sleep(1)
             print(f'Монстр имеет {lab1[x][y].monster_health} здоровья и наносит {lab1[x][y].attack_monster} урона.')
+            print()
             
-            while lab1[x][y].monster_health > 0 and player.is_alive():
-                if len(player.swords) > 0:
+            while lab1[x][y].monster_health > 0 and player.is_alive():   # цикл до тех пор, пока оба живы
+                if len(player.swords) > 0: # проверка на наличие меча в инвенторе
                     sword_damage = player.swords[0] # используем первый меч из инвентаря (он по умолчанию является основным)
+                    print(f'Вы нанесли {sword_damage} урона монстру. У монстра осталось ', end ='')
+                    print('0 здоровья' if lab1[x][y].monster_health - sword_damage <= 0 else f'{round(lab1[x][y].monster_health - sword_damage)} здоровья.')
                     lab1[x][y].monster_health -= sword_damage
-                    print(f'Вы нанесли {sword_damage} урона монстру. У монстра осталось {lab1[x][y].monster_health} здоровья.')
-                    print()
-                    time.sleep(0.5)
-                else:
+
+                else:     # если меча нет, то игрок бьется руками (player.base_uron)
                     print(f'Вы нанесли {player.base_uron} урона монстру. У монстра осталось ', end='')
-                    print('0 здоровья' if lab1[x][y].monster_health - player.base_uron < 0 else f'{lab1[x][y].monster_health - player.base_uron} здоровья.')
+                    print('0 здоровья' if lab1[x][y].monster_health - player.base_uron <= 0 else f'{round(lab1[x][y].monster_health - player.base_uron)} здоровья.')
                     lab1[x][y].monster_health -= player.base_uron
-                    print()
-                    time.sleep(0.5)
+
         
-                if lab1[x][y].monster_health > 0:
+                if lab1[x][y].monster_health > 0:        
                     uron = lab1[x][y].attack_monster * (1 - player.armor / 100)
                     print(f'Монстр атакует вас и наносит {uron} урона. У вас осталось ', end='')
-                    print('0 здоровья' if player.health - uron < 0 else f'{player.health - uron} здоровья.')
+                    print('0 здоровья' if player.health - uron <= 0 else f'{round(player.health - uron)} здоровья.')
                     player.health -= uron  # уменьшаем здоровье игрока с учетом брони
-                    print()
-                    time.sleep(0.5)
+                    input()
  
             if player.is_alive():
                 print('Вы победили монстра!')
@@ -228,33 +267,7 @@ while True:
                 print('Вы были убиты ловушкой. Игра окончена.')
                 break
 
-        print('Хотите заглянуть в инвентарь? (да/нет)')
-        print('Ваш ответ: ', end='')
-        otvet = input()
-        if otvet == 'да':
-            print('Инвентарь:')
-            print(f'Здоровье: {player.health}')
-            print(f'Броня: {player.armor}')
-            print('Мечи: ', end='')
-            print(player.swords if player.swords else 'пусто')
-            time.sleep(1)
-            print()
-            if len(player.swords) > 0:
-                print('Хотите отсортировать мечи по урону? (да/нет)')
-                print('Самый первый меч в списке будет являться основным.')
-                print('Ваш ответ: ', end='')
-                otvet = input()
-                if otvet == 'да':
-                    player.swords.sort(reverse=True)
-                    print('Мечи отсортированы по урону.')
-                    print(f'Ваши мечи: {player.swords}')
-                    time.sleep(3)
-                else:
-                    print('Вы решили не сортировать мечи.')
-                    print()
-                    time.sleep(2)
-        else:
-            print()
+        invent()
             
         print('Хотите продолжить идти дальше? (да/нет)')
         print('Ваш ответ: ', end='')
@@ -263,22 +276,12 @@ while True:
             time.sleep(1)
             pass
         else:
-            print('Вы решили закончить игру.')
-            time.sleep(1.5)
-            break
+            if invent():
+                print('Вы решили закончить игру.')
+                time.sleep(1.5)
+                break
 
         clear_screen()
         proshlie_komnati.append((x, y))  # добавляем координаты комнаты в список посещенных комнат
     else:
         clear_screen()
-        
-
-
-
-        
-
-        
-
-    
-
-
