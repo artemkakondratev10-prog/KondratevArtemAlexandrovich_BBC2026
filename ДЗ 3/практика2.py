@@ -30,13 +30,9 @@ class Player:
     def permutation_sword(self):
         print('Какие два меча хотите поменять местами?')
         print('Ваш ответ (например 1,2): ', end='')
-        otvet = [int(q - 1) for 1 in input().split(',')]
+        otvet = [int(q - 1) for q in input().split(',')]
         self.sword[otvet[0]], self.sword[otvet[1]] = self.sword[otvet[1]], self.sword[otvet[0]]
-        print()
-
-    def vibros(self):
-        pass           #реализовать метод выбороса меча из инвентаря и потом связть это с блоком из основной программы комната сундук
-
+        print() 
 
 
 def generate_room(lab):
@@ -118,7 +114,37 @@ def invent():
         return True  # эта строка нужна для проверки, если пользователь решил не идти дальше и не захотел смотреть в инвентарь
         print()
 
+def sword_delete(swords):
+    print('Ваши мечи: ', end='')
+    for i in range(len(swords)):
+        print(f'{i + 1} меч с уроном {swords[i]}')
+    
+    while True:
+        otvet1 = input('Напишите номер меча, который хотите выбросить или напишите 0, если не хотите ничего выбрасывать', end='')
+        if otvet1 == '0':
+            break
+        del swords[otvet1 - 1]
+        
+def sword_add(swords, lab1):  # функция добавления мечей
+    while True:
+        print('1. Добавить меч.')
+        print('2. Выбросить меч.')
+        print('3. Ничего не делать.')
+        print('Выберите, что хотите сделать(номер операции): ',end='')
+        otvet = input()
+        if otvet == '3':
+            break
+        elif otvet == '1':
+            print(f'Напишите номер(а) меча или мечей, которые хотите забрать: ')
+            for i in range(len(lab1[x][y].sword)):
+                print(f'{i + 1}. Меч с уроном {lab1[x][y].sword[i]}')
 
+            print('Ваш выбор (пишите через запятую с пробелом): ', end='')
+            result = [int(q - 1) for q in input().split(', ')]
+            for i in result:
+                swords.append(lab1[x][y].sword[i])
+        elif otvet == '2':
+            sword_delete(swords)
 
 # def information(invent):
 #     print(f'1. Ваше здоровье: {invent[0]}')
@@ -205,19 +231,12 @@ while True:
                 else:
                     print('Вы не можете забрать все мечи из сундука.')
                     print(f'Вы можете забрать только {ogr_sword - len(player.swords)} меча.')
-                    print('Хотите забрать только часть мечей из сундука? (да/нет)')
+                    print('Хотите забрать только часть мечей из сундука или выбросить лишние? (да/нет)')
                     print('Ваш ответ: ', end='')
-                    otvet = input()                                                              # !!!!!!!!!!!!!!!!!!!!!!!!
-                    print()                                                                # тут остановился, доработать механику выбрасывания меча     
-                    if otvet == 'да':                                                      # и добавления нового
-                        print(f'Напишите номера меча или мечей, которые хотите забрать: ')
-                        for i in range(len(lab1[x][y].sword)):
-                            print(f'{i + 1}. Меч с уроном {lab1[x][y].sword[i]}')
-                        print('Ваш выбор (пишите через запятую с пробелом): ', end='')
-                        result = [int(q - 1) for q in input().split(', ')]
-
-                        for i in result:
-                            player.swords.append(lab1[x][y].sword[i])
+                    otvet = input()                                                              
+                    print()                                                                
+                    if otvet == 'да':        
+                        sword_add(player.swords, lab1)                                             
             else:
                 print('Вы решили оставить предметы в сундуке.')
                 print()
@@ -228,7 +247,6 @@ while True:
             time.sleep(1)
             print(f'Монстр имеет {lab1[x][y].monster_health} здоровья и наносит {lab1[x][y].attack_monster} урона.')
             print()
-            
             while lab1[x][y].monster_health > 0 and player.is_alive():   # цикл до тех пор, пока оба живы
                 if len(player.swords) > 0: # проверка на наличие меча в инвенторе
                     sword_damage = player.swords[0] # используем первый меч из инвентаря (он по умолчанию является основным)
@@ -241,7 +259,6 @@ while True:
                     print('0 здоровья' if lab1[x][y].monster_health - player.base_uron <= 0 else f'{round(lab1[x][y].monster_health - player.base_uron)} здоровья.')
                     lab1[x][y].monster_health -= player.base_uron
 
-        
                 if lab1[x][y].monster_health > 0:        
                     uron = lab1[x][y].attack_monster * (1 - player.armor / 100)
                     print(f'Монстр атакует вас и наносит {uron} урона. У вас осталось ', end='')
