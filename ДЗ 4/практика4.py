@@ -161,20 +161,20 @@ df5 = df.groupby('Pclass')['Survived'].mean() * 100        # пункт 39, вы
 # ответ на контрольный вопрос, группировка позволяет быстро узнать статистические данные в случае, когда понадобилось бы много масок.
 # например для Pclass и Sex понадобилось бы писать 6 масок и долго считать, в то время как группировка с агрегацией позволила быстро вычислить все необходимые данные.
 
-# df.to_csv(
-#     r'C:/Users/Привет/OneDrive/Рабочий стол/Homework python/ДЗ 4/titanic_processed.csv',
-#     index=False
-# )
+df.to_csv(
+    r'C:/Users/Привет/OneDrive/Рабочий стол/Homework python/ДЗ 4/titanic_processed.csv',
+    index=False
+)
 
-# df3.to_csv(
-#     r'C:/Users/Привет/OneDrive/Рабочий стол/Homework python/ДЗ 4/titanic_statistics.csv',
-# )
+df3.to_csv(
+    r'C:/Users/Привет/OneDrive/Рабочий стол/Homework python/ДЗ 4/titanic_statistics.csv',
+)
 
 data1 = pd.read_csv(r'C:/Users/Привет/OneDrive/Рабочий стол/Homework python/ДЗ 4/titanic_processed.csv')
 data2 = pd.read_csv(r'C:/Users/Привет/OneDrive/Рабочий стол/Homework python/ДЗ 4/titanic_statistics.csv')
 
-# print(data1.head())
-# print(data2.head())
+print(data1.head())
+print(data2.head())
 
 # ответы на итоговые вопросы: 
 # 1. Столбец Age содержал 86 пропусков (20% от всех значений), столбец Cabin содержал 327 пропусков (78% от всех значений)
